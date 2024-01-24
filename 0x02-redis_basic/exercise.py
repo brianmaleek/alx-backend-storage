@@ -61,22 +61,18 @@ def call_history(method: Callable) -> Callable:
     @wraps(method)
     def wrapper(self, *args, **kwargs):
         # Create key names for inputs and outputs lists
-        input_key = method.__qualname__ + ":inputs"
-        output_key = method.__qualname__ + ":outputs"
-
-        # Append the input arguments to the inputs list using RPUSH
-        input_data = str(args)  # Convert input arguments to string for storage
-        self._redis.rpush(input_key, input_data)
+        input_key = f"{method.__qualname__}:inputs"
+        output_key = f"{method.__qualname__}:outputs"
 
         # Execute the original method to retrieve the output
-        output = method(self, *args, **kwargs)
+        output_data = method(self, *args, **kwargs)
 
-        # Append the output to the outputs list using RPUSH
-        output_data = json.dumps(output)  # Convert output to JSON for storage
-        self._redis.rpush(output_key, output_data)
+        # map the arguments to their string representation
+        self._redis.rpush(input_key, str(args))
+        self._redis.rpush(output_key, str(output_data))
 
         # Return the original output
-        return output
+        return output_data
 
     return wrapper
 
