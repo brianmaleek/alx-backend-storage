@@ -13,6 +13,7 @@
 
 import redis
 import uuid
+import sys
 from typing import Union, Optional, Callable
 
 
@@ -48,3 +49,49 @@ class Cache:
 
         # Return the generated random key
         return random_key
+
+    def get(self, key: str, fn: Optional[Callable] = None) -> \
+            Union[str, bytes, int, float]:
+        """
+        Get the data stored at the input key and return it.
+
+        Args:
+        - key: Key to access the data in Redis.
+        - fn: Optional callable function to convert the retrieved data.
+
+        Returns:
+        - The data stored at the input key.
+        """
+        # Get the data stored at the input key
+        data = self._redis.get(key)
+
+        # If the function argument is not None, call the function on the data
+        if data is not None and fn is not None:
+            data = fn(data)
+
+        # Return the data
+        return data
+
+    def get_str(self, data: bytes) -> str:
+        """
+        Retrieve a string from Redis using the specified key.
+
+        Args:
+        - key: The key associated with the string in Redis.
+
+        Returns:
+        - The retrieved string, or None if the key does not exist.
+        """
+        return data.decode('utf-8')
+
+    def get_int(self, data: bytes) -> int:
+        """
+        Retrieve an integer from Redis using the specified key.
+
+        Args:
+        - key: The key associated with the integer in Redis.
+
+        Returns:
+        - The retrieved integer, or None if the key does not exist.
+        """
+        return int.from_bytes(data, sys.byteorder)
