@@ -30,6 +30,7 @@ def count_calls(method: Callable) -> Callable:
     """
     # Use the __qualname__ attribute to get the name of the method
     key = method.__qualname__
+
     # Create a wrapper function
     @wraps(method)
     def wrapper(self, *args, **kwargs):
