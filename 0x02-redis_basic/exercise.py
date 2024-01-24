@@ -13,7 +13,6 @@
 
 import redis
 import uuid
-import sys
 from typing import Union, Optional, Callable
 from functools import wraps
 
@@ -111,7 +110,7 @@ class Cache:
         # Return the data
         return data
 
-    def get_str(self, data: bytes) -> str:
+    def get_str(self, key: str) -> str:
         """
         Retrieve a string from Redis using the specified key.
 
@@ -121,9 +120,10 @@ class Cache:
         Returns:
         - The retrieved string, or None if the key does not exist.
         """
+        data = self._redis.get(key)
         return data.decode('utf-8')
 
-    def get_int(self, data: bytes) -> int:
+    def get_int(self, key: str) -> int:
         """
         Retrieve an integer from Redis using the specified key.
 
@@ -133,4 +133,5 @@ class Cache:
         Returns:
         - The retrieved integer, or None if the key does not exist.
         """
-        return int.from_bytes(data, sys.byteorder)
+        data = self._redis.get(key)
+        return int(data.decode('utf-8'))
