@@ -28,6 +28,8 @@ def count_calls(method: Callable) -> Callable:
     Returns:
     - The decorated method.
     """
+    # Use the __qualname__ attribute to get the name of the method
+    key = method.__qualname__
     # Create a wrapper function
     @wraps(method)
     def wrapper(self, *args, **kwargs):
@@ -42,8 +44,6 @@ def count_calls(method: Callable) -> Callable:
         Returns:
         - The result of calling the original method.
         """
-        # Use the __qualname__ attribute to get the name of the method
-        key = method.__qualname__
         # Increment the number of calls for this particular key
         self._redis.incr(key)
 
