@@ -18,6 +18,35 @@ from typing import Union, Optional, Callable
 from functools import wraps
 
 
+def replay(method: Callable):
+    """
+    Display the history of calls of a particular function.
+
+    Args:
+    - method: The method to display the history of.
+
+    Returns:
+    - None.
+    """
+    # Create key names for inputs and outputs lists
+    input_key = method.__qualname__ + ":inputs"
+    output_key = method.__qualname__ + ":outputs"
+
+    # Get the number of calls to the method
+    num_calls = method.__self__._redis.get(method.__qualname__).decode('utf-8')
+
+    # Get the inputs and outputs lists from Redis
+    inputs = method.__self__._redis.lrange(input_key, 0, -1)
+    outputs = method.__self__._redis.lrange(output_key, 0, -1)
+
+    # Print the history of calls
+    print("{} was called {} times:".format(method.__qualname__, num_calls))
+    for i, (input, output) in enumerate(zip(inputs, outputs)):
+        print("{}(*{}) -> {}".format(method.__qualname__,
+                                     input.decode('utf-8'),
+                                     output.decode('utf-8')))
+
+
 def call_history(method: Callable) -> Callable:
     """
     Decorator to store the history of inputs and outputs for a function
