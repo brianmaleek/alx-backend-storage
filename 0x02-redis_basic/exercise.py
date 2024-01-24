@@ -91,30 +91,24 @@ def count_calls(method: Callable) -> Callable:
     Returns:
     - The decorated method.
     """
-    # Use the __qualname__ attribute to get the name of the method
-    key = method.__qualname__
-
-    # Create a wrapper function
     @wraps(method)
     def wrapper(self, *args, **kwargs):
         """
-        Wrapper function for the decorator.
+        Increments the count for that key every time the method
+        is called and returns the value returned by the original method.
 
         Args:
-        - self: The Redis instance.
-        - args: The arguments passed to the method.
-        - kwargs: The keyword arguments passed to the method.
+        - self: The instance.
+        - *args: Positional arguments.
+        - **kwargs: Keyword arguments.
 
         Returns:
-        - The result of calling the original method.
+        - The result of the original method.
         """
-        # Increment the number of calls for this particular key
+        key = method.__qualname__
         self._redis.incr(key)
-
-        # Call the original method and return its result
         return method(self, *args, **kwargs)
 
-    # Return the wrapper function
     return wrapper
 
 
