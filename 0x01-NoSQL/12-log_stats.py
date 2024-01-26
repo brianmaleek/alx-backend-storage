@@ -23,5 +23,6 @@ if __name__ == '__main__':
             print(f'\tmethods {req}: {count}')
 
         # Status check statistics
-        status_logs = collection.count_documents({'method': 'GET', 'path': '/status'})
+        status_logs = collection.count_documents\
+                        ({'method': 'GET', 'path': '/status'})
         print(f'{status_logs} status check')
